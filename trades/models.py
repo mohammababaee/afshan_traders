@@ -1,6 +1,13 @@
 from django.db import models
 
 
+class Portfolio(models.Model):
+    portfolio_name = models.CharField(max_length=30, blank=True)
+
+    def __str__(self):
+        return f"Portfolio {self.id}"
+
+
 class Stock(models.Model):
     name = models.CharField(max_length=30)
     symbol = models.CharField(max_length=18, primary_key=True)
@@ -17,14 +24,8 @@ class Trade(models.Model):
     stock = models.ForeignKey(Stock, on_delete=models.CASCADE)
     amount = models.IntegerField()
     trade_type = models.CharField(max_length=4, choices=TRADE_TYPE_CHOICES)
+    portfolio = models.ForeignKey(Portfolio, related_name='trades', on_delete=models.CASCADE)
 
     def __str__(self):
         return f"{self.trade_date} - {self.stock.name} - {self.get_trade_type_display()} - {self.amount} shares at ${self.trade_price} each"
 
-
-class Portfolio(models.Model):
-    portfolio_name = models.CharField(max_length=30, blank=True)
-    trades = models.ManyToManyField(Trade, blank=True)
-
-    def __str__(self):
-        return f"Portfolio {self.id}"
