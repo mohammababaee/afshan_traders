@@ -3,7 +3,7 @@ from django.db import models
 
 class Stock(models.Model):
     name = models.CharField(max_length=30)
-    symbol = models.CharField(max_length=18)
+    symbol = models.CharField(max_length=18, primary_key=True)
 
     def __str__(self):
         return f"{self.name} ({self.symbol})"
