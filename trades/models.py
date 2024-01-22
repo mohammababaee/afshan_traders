@@ -23,5 +23,8 @@ class Trade(models.Model):
 
 
 class Portfolio(models.Model):
-    
-        pass
+    portfolio_name = models.CharField(max_length=30, blank=True)
+    trades = models.ManyToManyField(Trade, blank=True)
+
+    def __str__(self):
+        return f"Portfolio {self.id}"

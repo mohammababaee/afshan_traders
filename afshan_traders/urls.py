@@ -17,6 +17,9 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
+from trades.views import TradesAPIView
+
 urlpatterns = [
     path("admin/", admin.site.urls),
+    path('api/trades/', TradesAPIView.as_view(), name='trades_api'),
 ]
