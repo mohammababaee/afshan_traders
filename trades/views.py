@@ -49,11 +49,10 @@ class TradesAPIView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request):
-        pk = request.headers.get('Trade-Id')
+        pk = request.data.get('id')
         trade = self.get_object(pk)
         trade.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
-
+        return Response({'message': f'Trade with ID {pk} deleted successfully'}, status=status.HTTP_200_OK)
     def get_object(self, pk):
         try:
             return Trade.objects.get(pk=pk)
@@ -76,6 +75,16 @@ class StockAPIView(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    def delete(self, request):
+        pk = request.data.get('symbol')
+        stock = self.get_object(pk)
+        stock.delete()
+        return Response({'message': f'Stock with Name {pk} deleted successfully'}, status=status.HTTP_200_OK)
+    def get_object(self, pk):
+        try:
+            return Stock.objects.get(pk=pk)
+        except Stock.DoesNotExist:
+            raise Response(status=status.HTTP_404_NOT_FOUND)
 
 
 class PortfolioAPIView(APIView):
@@ -93,3 +102,13 @@ class PortfolioAPIView(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    def delete(self, request):
+        pk = request.data.get('id')
+        portfolio = self.get_object(pk)
+        portfolio.delete()
+        return Response({'message': f'Portfolio with id {pk} deleted successfully'}, status=status.HTTP_200_OK)
+    def get_object(self, pk):
+        try:
+            return Portfolio.objects.get(pk=pk)
+        except Portfolio.DoesNotExist:
+            raise Response(status=status.HTTP_404_NOT_FOUND)
