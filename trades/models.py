@@ -8,6 +8,30 @@ class Portfolio(models.Model):
     Each portfolio is identified by a unique name and includes a list of user trades associated with that specific portfolio.
     '''
     portfolio_name = models.CharField(max_length=30, blank=True)
+    portfolio_value = models.FloatField(null=True, blank=True)
+
+    def calculate_total_value(self):
+        trades = Trade.objects.filter(portfolio=self)
+        
+        # Initialize total value
+        total_value = 0.0
+
+        for trade in trades:
+            if trade.trade_type == "Buy":
+                total_value += trade.amount * trade.stock_price
+            elif trade.trade_type == "Sell":
+                total_value -= trade.amount * trade.stock_price
+
+        return total_value
+
+    def save(self, *args, **kwargs):
+        # Calculate and update portfolio value only if there are associated trades
+        trades_exist = Trade.objects.filter(portfolio=self).exists()
+        if trades_exist:
+            total_value = self.calculate_total_value()
+            self.portfolio_value = total_value
+
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f"Portfolio {self.id}"
@@ -37,13 +61,19 @@ class Trade(models.Model):
     amount = models.IntegerField()
     trade_type = models.CharField(max_length=4, choices=TRADE_TYPE_CHOICES)
     portfolio = models.ForeignKey(Portfolio, related_name='trades', on_delete=models.CASCADE)
-
+    
     def clean(self):
         if self.stock_price <= 0:
             raise ValidationError("Trade price must be a positive value.")
 
         if self.amount < 0:
             raise ValidationError("Amount must be a non-negative integer.")
+
+    def save(self, *args, **kwargs):
+        # Call the save method of the associated Portfolio
+        self.portfolio.save()
+
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.trade_date} - {self.stock.name} - {self.get_trade_type_display()} - {self.amount} shares at ${self.stock_price} each"

@@ -17,10 +17,12 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
-from trades.views import PortfolioAPIView, TradesAPIView, StockAPIView
+from trades.views import PortfolioAPIView, TradesAPIView, StockAPIView, FetchPortfolioData
 
 urlpatterns = [
     path("admin/", admin.site.urls),
     path('api/trades/', TradesAPIView.as_view(), name='trades_api'),
     path('api/stocks/', StockAPIView.as_view(), name='stocks_api'),
-      path('api/portfolio/', PortfolioAPIView.as_view(), name='portfolio_api'), ]
+    path('api/portfolio/', PortfolioAPIView.as_view(), name='portfolio_api'),
+    path('api/portfolio/id=<int:id>/', FetchPortfolioData.as_view(), name='portfolio_id'),
+    ]
