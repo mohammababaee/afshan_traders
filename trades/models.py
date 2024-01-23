@@ -8,7 +8,7 @@ class Portfolio(models.Model):
     Each portfolio is identified by a unique name and includes a list of user trades associated with that specific portfolio.
     '''
     portfolio_name = models.CharField(max_length=30, blank=True)
-    portfolio_value = models.FloatField(null=True, blank=True)
+    portfolio_value = models.FloatField(null=True, blank=True, editable=False)
 
     def calculate_total_value(self):
         trades = Trade.objects.filter(portfolio=self)
