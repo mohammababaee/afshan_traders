@@ -1,5 +1,6 @@
 from django.db import models
 from jsonschema import ValidationError
+import uuid
 
 
 class Portfolio(models.Model):
@@ -7,10 +8,12 @@ class Portfolio(models.Model):
     A user can manage multiple portfolios within their account.
     Each portfolio is identified by a unique name and includes a list of user trades associated with that specific portfolio.
     '''
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     portfolio_name = models.CharField(max_length=30, blank=True)
     portfolio_value = models.FloatField(null=True, blank=True, editable=False)
 
     def calculate_total_value(self):
+        
         trades = Trade.objects.filter(portfolio=self)
         
         # Initialize total value
@@ -41,6 +44,7 @@ class Stock(models.Model):
     '''
     Stocks that is curently avaliable in market, At the first phase we just use TSETMC symbols
     '''
+    id = models.UUIDField(default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=200)
     symbol = models.CharField(max_length=18, primary_key=True)
 
@@ -55,6 +59,7 @@ class Trade(models.Model):
     '''
     TRADE_TYPE_CHOICES = [("Buy", 'Buy'), ("Sell", "Sell")]
 
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     trade_date = models.DateField()
     stock_price = models.FloatField()
     stock = models.ForeignKey(Stock, on_delete=models.CASCADE)

@@ -1,3 +1,4 @@
+import random
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -23,14 +24,12 @@ class TradesAPIView(APIView):
             try:
                 stock = Stock.objects.get(symbol=stock_symbol)
             except Stock.DoesNotExist:
-                return Response({'error': 'Stock not found'}, status=status.HTTP_400_BAD_REQUEST)
-              
+                return Response({'error': 'Stock not found'}, status=status.HTTP_400_BAD_REQUEST)  
             try:
                 portfolio = Portfolio.objects.get(id=portfolio_id)
             except Portfolio.DoesNotExist:
                 return Response({'error': 'Portfolio not found'}, status=status.HTTP_400_BAD_REQUEST)
             
-            # Check if portfolio value will be non-negative after adding the new trade
             if portfolio.portfolio_value + ((-1 if trade_data['trade_type'] == 'Sell' else 1) * trade_data['amount'] * trade_data['stock_price']) >= 0:
                 trade = trade_serializer.save(stock=stock, portfolio=portfolio)
                 portfolio.trades.add(trade)
@@ -129,3 +128,13 @@ class FetchPortfolioData(APIView):
         portfolio_data = Portfolio.objects.get(id=pk)
         serializer = PortfolioSerializer(portfolio_data, many=False)
         return Response({'portfolio':serializer.data})
+
+
+class FetchTradeData(APIView):
+
+    def get(self, request, *args, **kwargs):
+        pk = self.kwargs.get('id')
+        trade_data = Trade.objects.get(id=pk)
+        serializer = TradeSerializer(trade_data, many=False)
+        current_price = serializer.data['amount'] * random.randint(100000, 120000)
+        return Response({'trade_information':serializer.data, "trade_current_price":current_price})
