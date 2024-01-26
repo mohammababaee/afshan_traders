@@ -30,7 +30,7 @@ class TradesAPIView(APIView):
             except Portfolio.DoesNotExist:
                 return Response({'error': 'Portfolio not found'}, status=status.HTTP_400_BAD_REQUEST)
             
-            if portfolio.portfolio_value + ((-1 if trade_data['trade_type'] == 'Sell' else 1) * trade_data['amount'] * trade_data['stock_price']) >= 0:
+            if (portfolio.portfolio_value==None and ((-1 if trade_data['trade_type'] == 'Sell' else 1) * trade_data['amount'] * trade_data['stock_price']) >= 0) or portfolio.portfolio_value + ((-1 if trade_data['trade_type'] == 'Sell' else 1) * trade_data['amount'] * trade_data['stock_price']) >= 0 :
                 trade = trade_serializer.save(stock=stock, portfolio=portfolio)
                 portfolio.trades.add(trade)
                 portfolio.save()
@@ -138,3 +138,30 @@ class FetchTradeData(APIView):
         serializer = TradeSerializer(trade_data, many=False)
         current_price = serializer.data['amount'] * random.randint(100000, 120000)
         return Response({'trade_information':serializer.data, "trade_current_price":current_price})
+
+
+class FetchPortfolioInfo(APIView):
+
+    def get(self, request, *args, **kwargs):
+        pk = self.kwargs.get('id')
+
+        # Retrieve trades efficiently using select_related
+        trades = Trade.objects.filter(portfolio_id=pk).select_related('stock')
+
+        serializer = TradeSerializer(trades, many=True)
+
+        # Calculate total value accurately
+        total_value = 0
+        for item in trades:
+            current_price = random.randint(-100000, 120000)
+            total_value += (item.amount * current_price) - item.stock_price * item.amount
+
+        # Determine profit status correctly
+        is_in_profit = total_value > 0
+
+        return Response({
+            'number_of_trades': trades.count(),  # Use trades.count() for efficiency
+            'trades': serializer.data,
+            'is_in_profit': is_in_profit,
+            'current_value': total_value
+        })
