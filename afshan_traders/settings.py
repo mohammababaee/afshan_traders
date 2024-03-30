@@ -35,8 +35,9 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    'rest_framework',
-    "trades"
+    "rest_framework",
+    "trades",
+    "users",
 ]
 
 MIDDLEWARE = [
@@ -50,6 +51,9 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = "afshan_traders.urls"
+
+
+AUTH_USER_MODEL = "users.User"
 
 TEMPLATES = [
     {

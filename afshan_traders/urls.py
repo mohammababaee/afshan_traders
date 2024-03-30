@@ -14,17 +14,42 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+
 from django.contrib import admin
 from django.urls import path
 
-from trades.views import PortfolioAPIView, TradesAPIView, StockAPIView, FetchPortfolioData, FetchTradeData,FetchPortfolioInfo
+from trades.views import (
+    PortfolioAPIView,
+    TradesAPIView,
+    StockAPIView,
+    FetchPortfolioData,
+    FetchTradeData,
+    FetchPortfolioInfo,
+)
+from users.views import UserAuth
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path('api/trades/', TradesAPIView.as_view(), name='trades_api'),
-    path('api/stocks/', StockAPIView.as_view(), name='stocks_api'),
-    path('api/portfolio/', PortfolioAPIView.as_view(), name='portfolio_api'),
-    path('api/portfolio/id=<str:id>/', FetchPortfolioData.as_view(), name='portfolio_id'),
-    path('api/trades/id=<str:id>/', FetchTradeData.as_view(), name='trades_id'),
-    path('api/portfolio_info/id=<str:id>/', FetchPortfolioInfo.as_view(), name='portfolio_info'),
-    ]
+    path("api/trades/", TradesAPIView.as_view(), name="trades_api"),
+    path("api/stocks/", StockAPIView.as_view(), name="stocks_api"),
+    path("api/portfolio/", PortfolioAPIView.as_view(), name="portfolio_api"),
+    path(
+        "api/portfolio/id=<str:id>/", FetchPortfolioData.as_view(), name="portfolio_id"
+    ),
+    path("api/trades/id=<str:id>/", FetchTradeData.as_view(), name="trades_id"),
+    path(
+        "api/portfolio_info/id=<str:id>/",
+        FetchPortfolioInfo.as_view(),
+        name="portfolio_info",
+    ),
+    path(
+        "api/portfolio_info/id=<str:id>/",
+        FetchPortfolioInfo.as_view(),
+        name="portfolio_info",
+    ),
+    path(
+        "api/users",
+        UserAuth.as_view(),
+        name="portfolio_info",
+    ),
+]

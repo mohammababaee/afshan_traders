@@ -1,21 +1,24 @@
 from django.db import models
 from jsonschema import ValidationError
 import uuid
+from users.models import User
 
 
 class Portfolio(models.Model):
-    '''
+    """
     A user can manage multiple portfolios within their account.
     Each portfolio is identified by a unique name and includes a list of user trades associated with that specific portfolio.
-    '''
+    """
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     portfolio_name = models.CharField(max_length=30, blank=True)
     portfolio_value = models.FloatField(null=True, blank=True, editable=False)
 
     def calculate_total_value(self):
-        
+
         trades = Trade.objects.filter(portfolio=self)
-        
+
         # Initialize total value
         total_value = 0.0
 
@@ -41,9 +44,10 @@ class Portfolio(models.Model):
 
 
 class Stock(models.Model):
-    '''
+    """
     Stocks that is curently avaliable in market, At the first phase we just use TSETMC symbols
-    '''
+    """
+
     id = models.UUIDField(default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=200)
     symbol = models.CharField(max_length=18, primary_key=True)
@@ -53,11 +57,12 @@ class Stock(models.Model):
 
 
 class Trade(models.Model):
-    '''
+    """
     Eache trade contains detalis about a trade that user have done in their broker
-    
-    '''
-    TRADE_TYPE_CHOICES = [("Buy", 'Buy'), ("Sell", "Sell")]
+
+    """
+
+    TRADE_TYPE_CHOICES = [("Buy", "Buy"), ("Sell", "Sell")]
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     trade_date = models.DateField()
@@ -65,8 +70,10 @@ class Trade(models.Model):
     stock = models.ForeignKey(Stock, on_delete=models.CASCADE)
     amount = models.IntegerField()
     trade_type = models.CharField(max_length=4, choices=TRADE_TYPE_CHOICES)
-    portfolio = models.ForeignKey(Portfolio, related_name='trades', on_delete=models.CASCADE)
-    
+    portfolio = models.ForeignKey(
+        Portfolio, related_name="trades", on_delete=models.CASCADE
+    )
+
     def clean(self):
         if self.stock_price <= 0:
             raise ValidationError("Trade price must be a positive value.")
@@ -81,5 +88,4 @@ class Trade(models.Model):
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return f"{self.trade_date} - {self.stock.name} - {self.get_trade_type_display()} - {self.amount} shares at ${self.stock_price} each"
-
+        return f"{self.trade_date} - {self.stock.name} - {self.trade_type} - {self.amount} shares at ${self.stock_price} each"
