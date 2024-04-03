@@ -20,17 +20,17 @@ from django.urls import path
 
 from trades.views import (
     PortfolioAPIView,
-    TradesAPIView,
+    TradeAPIView,
     StockAPIView,
     FetchPortfolioData,
     FetchTradeData,
     FetchPortfolioInfo,
 )
-from users.views import UserAuth
+from users.views import LoginAPIView, SignupAPIView
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("api/trades/", TradesAPIView.as_view(), name="trades_api"),
+    path("api/trades/", TradeAPIView.as_view(), name="trades_api"),
     path("api/stocks/", StockAPIView.as_view(), name="stocks_api"),
     path("api/portfolio/", PortfolioAPIView.as_view(), name="portfolio_api"),
     path(
@@ -48,8 +48,9 @@ urlpatterns = [
         name="portfolio_info",
     ),
     path(
-        "api/users",
-        UserAuth.as_view(),
-        name="portfolio_info",
+        "api/signup/",
+        SignupAPIView.as_view(),
+        name="signup",
     ),
+    path("api/login/", LoginAPIView.as_view(), name="login"),
 ]

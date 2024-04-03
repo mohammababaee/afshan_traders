@@ -30,6 +30,22 @@ class Portfolio(models.Model):
 
         return total_value
 
+    def update_trades_value(self):
+
+        trades = Trade.objects.filter(portfolio=self)
+
+        # Initialize total value
+        total_value = 0.0
+
+        for trade in trades:
+            if trade.trade_type == "Buy":
+                total_value += trade.amount * trade.stock_price
+            elif trade.trade_type == "Sell":
+                total_value -= trade.amount * trade.stock_price
+
+        self.portfolio_value = total_value
+        super().save()
+
     def save(self, *args, **kwargs):
         # Calculate and update portfolio value only if there are associated trades
         trades_exist = Trade.objects.filter(portfolio=self).exists()

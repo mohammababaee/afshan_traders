@@ -5,9 +5,10 @@ from rest_framework import status
 from trades.models import Portfolio, Stock, Trade
 from trades.serializers import PortfolioSerializer, TradeSerializer
 from trades.serializers import StockSerializer
+from rest_framework.exceptions import NotFound
 
 
-class TradesAPIView(APIView):
+class TradeAPIView(APIView):
 
     def get(self, request):
         all_trades = Trade.objects.all()
@@ -72,17 +73,24 @@ class TradesAPIView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request):
-        pk = request.data.get("id")
-        trade = self.get_object(pk)
-        trade.delete()
-        return Response(
-            {"message": f"Trade with ID {pk} deleted successfully"},
-            status=status.HTTP_200_OK,
-        )
+        pk = request.headers.get("Trade-Id")
+        try:
+            trade = self.get_object(pk)
+            portfolio_id = trade.portfolio.id
+            print(portfolio_id)
+            portfolio = Portfolio.objects.get(id=portfolio_id)
+            trade.delete()
+            portfolio.update_trades_value()
+            return Response(
+                {"message": f"Stock with ID {pk} deleted successfully"},
+                status=status.HTTP_200_OK,
+            )
+        except Stock.DoesNotExist:
+            raise NotFound(detail=f"Stock with ID {pk} does not exist")
 
     def get_object(self, pk):
         try:
-            return Trade.objects.get(pk=pk)
+            return Trade.objects.get(id=pk)
         except Trade.DoesNotExist:
             raise Response(status=status.HTTP_404_NOT_FOUND)
 

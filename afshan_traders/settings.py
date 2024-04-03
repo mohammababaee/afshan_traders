@@ -52,7 +52,13 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = "afshan_traders.urls"
 
-
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework.authentication.TokenAuthentication",
+        # other authentication classes...
+    ],
+    # other settings...
+}
 AUTH_USER_MODEL = "users.User"
 
 TEMPLATES = [
