@@ -9,7 +9,6 @@ class Portfolio(models.Model):
     A user can manage multiple portfolios within their account.
     Each portfolio is identified by a unique name and includes a list of user trades associated with that specific portfolio.
     """
-
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     portfolio_name = models.CharField(max_length=30, blank=True)

@@ -16,6 +16,8 @@ class User(AbstractUser):
     Custom user model extending AbstractUser.
     """
 
+    ROLE = (("n", "Normal"), ("a", "Admin"))
+    role = models.CharField(choices=ROLE, default="n",max_length=1)
     email = models.EmailField(unique=True)
     phone_number = models.CharField(
         max_length=11, blank=True, null=True, validators=[validate_phone_number]

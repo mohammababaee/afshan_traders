@@ -18,6 +18,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
+from consult.views import ConsultAPIView
 from trades.views import (
     PortfolioAPIView,
     TradeAPIView,
@@ -53,4 +54,5 @@ urlpatterns = [
         name="signup",
     ),
     path("api/login/", LoginAPIView.as_view(), name="login"),
+    path("api/consult/", ConsultAPIView.as_view(), name="login"),
 ]
