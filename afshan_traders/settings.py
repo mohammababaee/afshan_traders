@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "trades",
     "users",
+    'consult'
 ]
 
 MIDDLEWARE = [
